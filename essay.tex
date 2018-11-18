@@ -1,0 +1,110 @@
+%% options: [no]titlepage, twocolumn, landscape, draft
+\documentclass[a4paper, 12pt, draft, titlepage]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\date{} % overwrite default format
+% \usepackage[backend=biber, style=alphabetic, sorting=ynt]{biblatex}
+% \addbibresource{references.bib}
+\author{Norbert Logiewa\\nl253}
+\title{Applications of Evolutionary Algorithms in \\Scheduling, Planning and Timetabling}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introduction}
+
+Evolutionary algorithms (EA) are a class of procedures that are used when 
+finding a solution to a problem using regular means is not
+possible or very difficult. This is often because the search space is too
+large to be directly traversed so brute-force methods are not possible.
+EA allow to find good-enough solution to problems that don't necessarily
+need an \emph{optimal} solution.
+
+The aim of this essay is to examine how evolutionary algorithms can be 
+applied to schedule activities given a constrained amount of resources.
+Efficient scheduling of tasks if of interests to anyone who wishes
+to increase their productivity \emph{without} investing additional resources.
+
+Scheduling in the context of this essay will refer to ordering of tasks 
+that aims to maximise the productivity. Importantly, the ordering may be 
+done in such a way that some activities happen in parallel if business rules
+and resources allow for that.
+Productivity is the extent to which a schedule helps some organisation 
+to achieve their goals. If, for example, we are scheduling for a web development 
+agency, we can measure productivity by the lines of code produced by the
+developers.
+
+\section*{Case Study}
+
+Let us consider a case study in which a hypothetical university offers
+a 200 modules to 16000 students. Each student must take 8 unique
+modules. Each module needs to have 2 one-hour lectures during the
+working week. Additionally, each of those lectures or can take place
+in one of 50 lecture halls. Moreover, each of those lectures may be
+given by a lecturer from the relevant department.\footnote{We can assume that the
+avg. number of lectures is 50 for every department.} Finally, each lecture
+or may take place a time between 9am and 7pm.  \footnote{For the sake of
+simplicity I will assume all modules have to be taken i.e.  a situation
+in which an unpopular module would be dropped from the curriculum would
+not take place.}
+
+Each student would have a combination of modules that they would like to take.
+It is the task of the administration to ensure that none of the students 
+must be in more than one lecture at the same time. Furthermore, 
+none of the lectures can be asked to lecture something outside of their field
+of expertise and none can be asked to give more than one lecture at the same time.
+Lastly only one lecture can take place in a lecture hall at the same time.
+Such restrictions on allocation of resources will be referred to as \emph{business rules}.
+
+Suppose that the hypothetical university would like to improve their
+place in league tables. Suppose further,  that from the data they have
+collected the shows that students tend to perform better if there is a
+gap in between lectures rather than having multiple lectures in a row.
+
+A \emph{candidate solution} that obeys this criterion would be favoured in the
+process of selection.
+
+\section*{Solving the Problem}
+
+Clearly, the problem is complicated because there is a large number of independent
+variables. Using the brute-force approach would require us to traverse each point 
+in this multi-dimensional space which might take too long to complete.
+
+Before we apply EA to the problem it's necessary to define what a solution to
+the problem would be. The aim is to find a set of 400 tuples where each tuple
+is $(module, lecturer, time, hall)$. Our "solution set" will need to obey the
+business rules mentioned above. 
+
+To apply EA we need to initially randomly generate a set of candidate
+timetables. This will become the first generation.  On each iteration (next generation), we select the most promising timetables
+from the current gene pool (candidate-set of timetables) to enter the next 
+gene pool by measuring how well they obey the business rules. This is done
+using a \emph{fitness function} that assigns a number to each of the candidates. 
+
+Selection can be done in a number of ways but a popular way of doing
+that would be using \emph{tournament selection}.  In this scheme $k$
+candidate timetables are compared to each other to produce the best
+timetable (the fittest) to compete in the next round.  The population
+size has depleted so winners are used to create new individuals using
+variation operators in such a way that new individuals have something
+in common with the winners but also differ in some way.
+
+The process is repeated until some condition is met \footnote{E.g. 100 round
+have been completed or the algorithm has been running for 10 minutes.} at
+which point the best timetable (fittest individual) in our candidate-set (population) is
+presented as the solution to the timetabling problem.  The idea is that
+the quality of the solution \emph{increases} the longer the algorithm
+is being run. \footnote{EAs are \emph{greedy algorithms}.}
+ 
+\section*{Summary}
+
+This essay demonstrated how EA can be used to solve common problems
+such as timetabling or scheduling. It illustrated how to apply EA using
+a case study of a university, it discussed how to encode the candidate
+timetables and stated how carry out the algorithm in scenario.
+
+\printbibliography
+
+\end{document}
+
