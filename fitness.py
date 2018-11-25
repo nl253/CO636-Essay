@@ -23,7 +23,6 @@ def evalFitness(candidate: BitStr, modulesTaken: MultiSet[FrozenSet[int]]) -> in
             semester2 = lecture2[0]
             lecturer2 = decodeLecturer(lecture2)
             hall2 = decodeHall(lecture2)
-            module2 = decodeModule(lecture2)
             if semester == semester2:
                 if timesOverlap(time, time2):
                     if lecturer == lecturer2:
