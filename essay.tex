@@ -26,19 +26,21 @@
 
 \maketitle
 
-Evolutionary algorithms (EA) are a class of procedures that are used when
-finding a solution to a problem using regular means is not possible
-or very difficult.  This essay will discuss how GA can be applied
-to scheduling.  \emph{Scheduling} and \emph{timetabling} in this essay
-will refer to ordering of tasks that aims to maximise the productivity.
-The ordering may schedule some activities to take place in parallel if
-business rules and the amount of resources allow for that.  Efficient
-scheduling of tasks if of interests to anyone who wishes to increase their
-productivity \emph{without} investing additional resources.  EAs allow
-to find good-enough solution to problems that don't necessarily need an
-\emph{optimal} solution\cite[p.~44]{heaton2014}.  This is often because
-the search space is too large to be directly traversed so brute-force
-methods are not possible.
+Evolutionary algorithms (EA) are a class of procedures that are
+used when finding a solution to a problem using regular means is not
+possible or very difficult. EAs are often employed when dealing with
+multi-dimensional problems where sampling of every candidate is not
+possible \cite[p.~29]{floreano2008}. This essay will discuss how GA can
+be applied to scheduling.  \emph{Scheduling} and \emph{timetabling}
+in this essay will refer to ordering of tasks that aims to maximise
+the productivity.  The ordering may schedule some activities to take
+place in parallel if business rules and the amount of resources allow
+for that.  Efficient scheduling of tasks if of interests to anyone who
+wishes to increase their productivity \emph{without} investing additional
+resources.  EAs allow to find good-enough solution to problems that don't
+necessarily need an \emph{optimal} solution\cite[p.~44]{heaton2014}.
+This is often because the search space is too large to be directly
+traversed so brute-force methods are not possible.
 
 % \emph{Productivity} will refer the extent to which a schedule helps some
 % organisation to achieve their goals. \footnote{If, for example, we are
@@ -78,70 +80,99 @@ multi-dimensional space would take too much time.
 Each candidate solution (timetable) would be encoded as a bit-string
 \footnote{this is the genotype and is analogous to DNA} representing all
 the lectures along with time, place and the lecturer taking place during
-the week.  This choice of encoding i.e. genotype is because bit-string
-encoding has been the most studied in the literature on GA and as a
-result the operators invented by researchers assume this encoding for
-each candidate. \cite[p.~103]{eberhart2007}. The crossover operator,
-for instance, is extremely easy to apply to a bit-string but less easy
-to other data structures such as sets. We might allocate a chunk of bits
-for every lecture that must take place.  In every sub-string representing
-a lecture the first bit would determine whether the lecture takes place
-in the first or the second semester.  The following \(m\) bits could
-encode an integer index in the modules array.  The next \(l\) bits could
-encode an integer index in our lecturer array. The following \(t\) bits
-could encode an integer referring to the time that lecture will take
-place. The last \(h\) bits could encode an integer index in our lecture
-halls array. Hence each lecture would be a bit-string of length \(1 +
-m + l + t + h\) and each candidate would be a concatenation of \(400\)
-of these giving us in total a bit-string of length \(400(1 + m + l + t +
-h)\). If we delegate, say, 16 bits to representing the time and 8 for each
-indexing integer, we end up with each candidate having a size of \(400 *
-(1 + 8 + 8 + 8 + 16) bits = 16400 bits = 2050 Bytes = approx. 2KB \).
-The \emph{phenotype} might be a list of lectures, for instance, which
-we would decode from the genotype (bitstring).
+the week.  This choice of bitstring encoding for candidate representation
+is motivated by the fact that this encoding has been extensively discussed
+in the literature on GA \cite[p.~103]{eberhart2007}. Bitstrings are
+the most common encoding \cite[p.~127]{norvig2010} possibly because
+this low-level representation uses less resources and operators such as
+cross-over mutation invented by researchers tend to behave well when we
+encode solutions in this manner.  The crossover operator, for instance,
+is extremely easy to apply to a bit-string but less easy to other
+data structures such as sets.  In this scenario we allocate a chunk
+of bits for every lecture that must take place.  In every sub-string
+representing a lecture the first bit determines whether the lecture
+takes place in the first or the second semester.  The following \(m\)
+bits encode an integer index in the modules array.  The next \(l\)
+bits encode an integer index in a lecturer array. The following \(t\)
+bits encode an integer referring to the time that lecture will take
+place. The last \(h\) bits encode an integer index in a lecture halls
+array. Hence each lecture is be a bit-string of length \(1 + m + l + t +
+h\) and each candidate is be a concatenation of \(400\) of these giving
+us in total a bit-string of length \(400(1 + m + l + t + h)\). If we
+delegate, say, 16 bits to representing the time and 8 for each indexing
+integer, we end up with each candidate having a size of \(400 * (1 +
+8 + 8 + 8 + 16)\ bits = 16400\ bits = 2050\ Bytes = approx.\ 2\ KB \).
+It's useful to bear in mind the size of each candidate when deciding on
+the population size. Some researchers suggest population sizes of \(1000\)
+\cite[p.~25]{heaton2014}. This would mean our application would require
+\(2\ KB * 1000 = 2000\ KB = 2\ MB\) memory.  The \emph{phenotype} might be a
+list of lectures, for instance, which we would decode from the \emph{genotype}
+(bitstring).
 
 \subsection*{Selection Operator}
 
-A good choice of selection operator would be rank-based selection. The
-reason for this is that in this scenario the exact fitness value of
-an individual is irrelevant. Another reason is that it simplifies
-implementation. An alternative would be using roulette selection.
+The GA literature discusses a number of operators to be used for
+selection: proportionate, rank-based and tournament among others
+\cite{floreano2008, eberhart2007, heaton2014}.  A good choice of selection
+operator would be rank-based selection (RBS). The reason for this is that
+in this scenario the exact fitness value of an individual is irrelevant.
+It's sufficient to know that a candidate is better than others for it
+to make it into the next gene-pool.  Moreover, It's not clear that other
+more sophisticated selection methods such as tournament selection would
+yield better results. Furthermore, RBS avoids issues that proportionate
+selection faces: when all candidates have a similar fitness or one
+candidate has a large high fitness score, the selection turns into a
+random search.  \cite[p.~23]{floreano2008} Lastly, the use of RBS simplifies
+implementation and is in line with the principle of parsimony.
 
 \subsection*{Genetic Operators \& Adaptive GA}
 
-Since as a result of this selection the population size has depleted
-pairs of winners are used as input to the crossover operator to
-create new individuals.  Crossover is used because it is a standard
-and well-understood operator.  Additionally, mutation with a small
-probability would be introduced to further increase variation in the
-population. A good starting values for the parameters would be as follows:
-\(p(crossover) = 0.8\) and \(p(mutation) = 0.2\) \cite{heaton2014}.
+Application of a selection operator reduces the size of the population. To
+replenish it, pairs of winners are used as input to the crossover operator which creates
+new individuals.  Crossover is used because it is a standard and
+well-understood operator. Additionally, mutation is introduced with
+a small probability to further increase variation in the population.
+These two tend to be combined because cross-over \emph{recombines} existing
+genes whereas mutation introduces \emph{novelty}.  \cite[p.~27]{heaton2014}.
+A good starting values for the parameters would be as follows:
+\(p(crossover) = 0.8\) \cite[p.~117]{eberhart2007} and \(p(mutation) =
+0.2\) \cite[p.~25]{heaton2014} although some researchers suggest lower
+rates e.g. \(0.005\) \cite[p.~117]{eberhart2007}.
 
-However, the crossover operator is problematic. In the initial phase of
-looking for a solution across the fitness landscape it is useful to vary
-candidates a lot so using crossover is highly beneficial. However, once
-a satisfactory candidate has been found, we might only wish to tweak it
-a bit. Altering the candidate too much would be equivalent to abandoning
-the progress that has been made to reach this fitness score. Hence,
-a less "invasive" and more fine-grained operator such as mutation may
-become more advantageous as the number of iterations grows. We could use
-it to target smaller parts of the bitstring. In essence, the benefit of
-using crossover, arguably, diminishes with time. To implement that we
-might make the probability of mutation and cross-over be a function of
-the number of iteration. \(p(mutation)\) might grow proportionally to
-time until it reaches \(1.0\) and \(p(cross-over)\) might become smaller
-proportionally to time until it reaches \(0.0\). This is referred to as 
-an \emph{adaptive} GA.
+However, the crossover operator is problematic. In the initial phase
+of looking for a solution across the fitness landscape it is useful to
+vary candidates a lot so using crossover is highly beneficial. However,
+once a satisfactory candidate has been found, we might only wish to
+tweak it a bit. Altering the candidate too much would be equivalent
+to abandoning the progress that has been made to reach this fitness
+score. Hence, a less "invasive" and more fine-grained operator such
+as mutation \cite[p.~28]{floreano2008} may become more advantageous as
+the number of iterations grows.  In a bit-string a mutation would flip
+a bit which may, for example, increment an integer which represents
+a lecturer thus making a change in a candidate.  The benefit of using
+crossover, arguably, diminishes with time. To implement that we might
+increase the probability of mutation and increase the probability of cross-over 
+at the beginning of every iteration until \(p\) reaches \(0\) for cross-over
+and until \(p\) reaches \(1\) for mutation.
 
 An alternative way of preserving the fittest candidates in the next
 population would be to use elitism. This would protect against degrading
 of solutions when cross-over is applied to fittest candidates.
+\cite[p.~26]{floreano2008}
+
+However, this enhancement may not be necessary. Norvig
+\cite[p.~128]{norvig2010} points out that when the algorithm begins to
+converge on a solution after being run for a while, the candidates in
+our population are not very diverse. This means, in theory, that the
+cross-over operator would take "smaller steps" because of how similar
+candidates are.
 
 \subsection*{The fitness function}
 
-The fitness function would decipher each of the \(400\) sub-strings within each
-candidate bit-string and assign a score to each candidate which would reflect
-the extent to which it obeys the business rules. In pseudo (python-like) code: 
+The fitness function deciphers each of the \(400\) sub-strings within each
+candidate bit-string and assigns a score to each candidate which reflects
+the extent to which it obeys the business rules. \cite[p.~22]{floreano2008} 
+In pseudo (python-like) code: 
 
 \inputminted{python}{fitness.py}
 
@@ -163,13 +194,11 @@ and value is the number of students who chose this particular combination of mod
 
 \subsection*{The invariant}
 
-The procedure would be repeated until either 10 minutes have passed or a
-solution with a satisfactory fitness score has been found.  At that point
-the best timetable (fittest individual) in our population is presented
-as the solution to the timetabling problem.
-
-% The idea is that the quality of the solution \emph{increases} the longer
-% the algorithm is being run. \footnote{EAs are \emph{greedy algorithms}.}
+GA is run repeated until either enough time has passed or other condition
+has been met. \cite[p.~108]{eberhart2007}. In this scenario a good choice
+would be to wait for a high enough fitness value in a candidate but to
+also introduce a timeout of, say, 10 minutes in case such a candidate
+cannot be found.
 
 \section*{Summary}
 
@@ -201,7 +230,6 @@ stated how carry out the algorithm in this scenario.
   \textit{Artificial Intelligence},
   \textit{A MODERN APPROACH},
   p. 126-129, 
-  p. 155,
   3rd Ed., 
   Pearson Education
   2010.
