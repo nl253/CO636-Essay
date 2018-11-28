@@ -5,10 +5,12 @@ start
 :generate intial population;
 
 repeat 
-  :order by fitness;
-  :keep top 10%,\ndiscard bottom 90%;
-  :replenish depleated population\nby applying cross-over\nto pairs of top 10% candidates &\nmutation to individual candidates;
-repeat while (10 min have not passed)
+  :decrease p(cross-over);
+  :increase p(mutation);
+  :order candidates by fitness;
+  :keep a fraction of the\npopulation with the highest fittness\ndiscard the rest;
+  :replenish depleated population\nby applying cross-over\nto pairs of top candidates &\nmutation to individual candidates;
+repeat while (enough time has not passed)
 :return most fit;
 stop
 
