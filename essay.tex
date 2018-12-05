@@ -9,7 +9,7 @@
 {0pt}{1.0ex plus 1ex minus .2ex}{1.0ex plus .2ex}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
-\usepackage[margin=0.1in]{geometry}
+\usepackage[margin=0.35in]{geometry}
 
 \usepackage{minted}
 \date{} % overwrite default format
@@ -17,8 +17,6 @@
 \title{Applications of Evolutionary Algorithms in Scheduling}
 
 \begin{document}
-
-% TODO fix diveev2017 citation
 
 \maketitle
 
@@ -34,8 +32,7 @@ solution to problems that don't necessarily need an \emph{optimal}
 solution\cite[p.~44]{heaton2014} \cite[p.~53]{diveev2017}.  They also
 present an opportunity to exploit the computing power of modern multi-core
 CPUs by running subroutines in parallel. \cite[p.~28]{aljarrah2017}
-This essay will attempt to explore ways of applying a GA to solve
-scheduling problems.
+This essay will explore how GAs can be applied to solve scheduling problems.
 
 \section*{The Problem}
 
@@ -48,49 +45,39 @@ increase their productivity \emph{without} investing additional resources.
 
 Scheduling for an organisation is often associated with adhering to a
 set of constraints that must be met called \emph{hard constraints} in
-the literature, such as: lecturers can only give one lecture at a time
-but there are also \emph{soft constraints} which benefit candidates that
-adhere to them but are not compulsory e.g. the timetable includes breaks
+the literature. These would be things as: lecturers can only give one lecture at a time.
+There are also \emph{soft constraints} which benefit candidates that
+adhere to them but are not compulsory. E.g. the timetable includes breaks
 in between activities to allow for rest. \cite[p.~26]{aljarrah2017}
-\cite{timilsina2015} \cite[p.~2505]{qaurooni2013}
+\cite{timilsina2015} \cite[p.~2505]{qaurooni2013} \cite[p.~56]{diveev2017}
 
 \section*{Solving the Problem}
 
 Applying an EA entails the use of 3 main components: a selection
-operator \footnote{to remove the unfit candidates and persist the
-fittest}, genetic operator \footnote{to create new candidate solutions}
-and a fitness function \footnote{to identify the fittest candidates}
+operator \footnote{to remove the unfit candidates from the population}, genetic operator \footnote{to generate new candidate solutions}
+and a fitness function \footnote{to calculate how fit the candidates are}
 \cite{mesghouni2004, yu2002, diveev2017, aljarrah2017, timilsina2015}.
 
 \subsection*{Encoding Candidates}
 
-% TODO what tends to be used
 % TODO issues with the current approach (if applicable) or why the current approach is good
 % TODO conclude suggesting best encoding 
 
-In GAs candidates are most commonly encoded using bitstrings
-\cite[p.~127]{norvig2010} and they have received the most attention in
-the literature \cite[p.~103]{eberhart2007}. However, it is not certain
-that this is the most natural, the most convenient or the most efficient encoding
-for the scheduling problem. The standard bit-string encoding has been
-criticised by Mesghouni et al. who say "this approach cannot usually
-be used for real word engineering problems such as combinatorial ones"
-\cite[p.~93]{mesghouni2004}. Instead they suggest the use of numbers for
-representing every gene so that each candidate is a permutation of numbers.
+In GAs candidates are most commonly encoded using bit-strings
+\cite[p.~127]{norvig2010} and this encoding has received the most
+attention in the literature \cite[p.~103]{eberhart2007}.
+However, it is not certain that this is the most natural, the most
+convenient or the most efficient encoding for a scheduling problem.
+The standard bit-string encoding has been criticised by Mesghouni et al.
+who say ``[...] this approach cannot usually be used for real word engineering problems such as combinatorial ones [...]''\cite[p.~93]{mesghouni2004}. Instead they suggest the use of numbers to represent every gene
+so that each candidate is a permutation of numbers.
+The use of numbers instead of bit-strings has also been endorsed by May et al.
+and Solanki who also used numbers to encode their candidate solutions. \cite[p.~7076]{may2015} \cite[p.~3868]{solanki2015}
 Researchers who wish to abandon the traditional approach might need to
-invent new operators or adapt existing ones to fit their encoding scheme which
-may be seen as a disadvantage. 
-
-% It's also important to bear in mind that although bitstrings 
-% may \emph{seem} to be easy to manipulate in modern programming langauges, 
-% not many runtimes support bitstrings. None of the most popular languages: Java,
-% Python, JavaScript support the notion of a bitstring. Of those only Python supports integers with arbitrary size which may be used to emulate a bitstring. 
+invent new operators or adapt existing ones to fit their encoding scheme
+which may be seen as a disadvantage.
 
 \subsection*{Selection Operator}
-
-% TODO what operator tends to be used
-% TODO issues with the current approach (if applicable) or why the current approach is good
-% TODO conclude suggesting best operators
 
 Selection is the core of every genetic algorithm. A good selection scheme
 ensures the algorithm does not converge prematurely on a sub-optimal
@@ -98,17 +85,19 @@ solution because the selection pressure was too high (and the diversity was
 lost prematurely \cite[p.~23]{floreano2008}) and at the same
 time does not let the procedure run for too long. \cite{yu2002}
 
-The GA literature discusses a number of operators to be used for
-selection: proportionate \footnote{roulette wheel}, rank-based and
+The GA literature discusses a number of selection operators including:
+proportionate \footnote{also known as \emph{roulette wheel} selection}, rank-based and
 tournament among others \cite{floreano2008, eberhart2007, heaton2014}.
 
 A popular choice seems to be proportionate selection with
 many researchers discussing and implementing GAs with this
 scheme. \cite{timilsina2015, yu2002, aljarrah2017, mesghouni2004}
-Al-Jarrah et al. reported excellent results when using proportionate
-selection scheme with instructors rating the output timetable as \(9.56/10\).
+Al-Jarrah et al. who set out to create a timetable for a university, reported
+excellent results when using proportionate selection scheme
+with instructors rating the output timetable as \(9.56/10\).
+This suggests that proportionate selection is a good choice of selection operator.
 
-However a good choice of selection operator could also be rank-based
+However another, potentially better choice could be rank-based
 selection (RBS).  RBS avoids issues that proportionate selection faces:
 when all candidates have a similar fitness or one candidate has a
 large high fitness score, the selection turns into a random search.
@@ -128,7 +117,7 @@ In terms of genetic operators research into GAs and scheduling seems
 to rely mainly on crossover and mutation \cite{yu2002, aljarrah2017,
 mesghouni2004, hosseinabadi2018, solanki2015, timilsina2015, may2015}.
 The aim of selection operators is to reduce the size of the population. To
-replenish it, winners are used as input to genetic operators which create
+replenish it, winners are used as input to genetic operators to create
 new individuals.  Crossover is commonly used because it is a standard and
 well-understood operator. Additionally, mutation with a small probability
 tends to be introduced to further increase variation in the population.
@@ -139,16 +128,18 @@ be as follows: \(p(crossover) = 0.8\) \cite[p.~117]{eberhart2007} and
 \(p(mutation) = 0.2\) \cite[p.~25]{heaton2014} although some researchers
 suggest much lower rates e.g. \(0.005\) \cite[p.~117]{eberhart2007}.
 
-However, the use of the standard operators has been criticised in
-timetabling problems.  By looking at a single candidate (mutation) or a
-pair (cross-over) we are risking crating an invalid candidate that breaks
+The use of the standard operators has been criticised in timetabling
+problems.  By looking at a single candidate \footnote{mutation is typically a unary operator} or a
+pair \footnote{cross-over is typically a binary operator} we are risking crating an invalid candidate that breaks
 hard constraints. We might, for instance, schedule a student to be in two
-places at the same time \emph{unless} we take a different approach and
-when generating candidates consider the candidates that have been created
+places at the same time \emph{unless} when generating candidates we consider the candidates that have been created
 so far. \cite[p.~2506]{qaurooni2013}.  This may save us from the danger
-of generating pointless candidates but may come at a cost. Firstly,
-the complexity of the algorithm increases.  Many are compelled to
-use GAs \emph{because} they are simple.  Secondly, in this scheme we
+of generating pointless candidates. Qaurooni and Akbarzadeh-T argue this
+saves us space and without group-based operators ``the search space of a
+grouping problem grows much larger than it has to be [...]''.
+However, the introduction of group-based operators may come at a cost. Firstly,
+the complexity of the algorithm increases.  Many are drawn to
+GAs \emph{because} they are simple.  Secondly, in this scheme we
 would need to iterate through the set of crated candidates every time a
 genetic operator is applied and carry out (potentially expensive) checks.
 Further research needs to be done to determine if alternative operators
@@ -159,7 +150,7 @@ also waste time on performing all the checks for meeting hard-constraints.
 
 The fitness function (FF) is problem-specific. Therefore, it is difficult
 to give any specific guidelines with regard to how it should be
-computed. Along with the parameters such as initial population size the
+designed. Along with the parameters such as initial population size the
 FF is one of the main concerns programmers face when using
 genetic algorithms. In essence, FF measures to what
 extent a candidate solution obeys the soft and hard constraints.
@@ -168,49 +159,48 @@ extent a candidate solution obeys the soft and hard constraints.
 % timetables could satisfy the constraints listed above. In other words,
 % the fitness landscape has many peaks.
 
-
-
-\subsection*{The invariant}
+\subsection*{Termination}
 
 % TODO what tends to be the ending criterion
 % TODO issues with the current approach (if applicable) or why the current approach is good
 % TODO conclude suggesting best invariant (timeout)
 
 GA is run repeated until either enough time has passed or other condition
-has been met. \cite[p.~108]{eberhart2007}. In this scenario a good choice
-would be to wait for a high enough fitness value in a candidate but to
-also introduce a timeout of, say, 10 minutes in case such a candidate
-cannot be found.
+has been met. \cite[p.~108]{eberhart2007}.
+Many researchers chose to wait for a fixed number of iterations before
+terminating execution of the algorithm. \cite[p.~3868]{solanki2015} \cite[p.~7078]{may2015} \cite{hosseinabadi2018}
+
+It's also possible to wait for a candidate with a satisfactory fitness score as Solanki suggests. \cite[p.~3868]{solanki2015}. In some cases this might save us time if the algorithm happens to be initialised in the global optimum, for instance. However, this is very unlikely and the iteration-based timeout would need to remain otherwise there is a risk of the algorithm getting stuck in a local optimum and never being able to reach the required mimimal fitness score.
+
+The problem with waiting for a fixed number of iterations is that there
+is no guarantee that the solution achieved after \(n\) iterations doesn't
+break any of the hard constraints. To remedy this, Al-Jarrah et al.
+took an innovative approach of \emph{restarting and reinitialising} the algorithm
+\emph{if} after some fixed number of iterations a satisfactory candidate is not found.
+\cite[p.~28]{aljarrah2017} 
 
 \subsection*{Initial Population}
 
 The initial population tends to be randomly generated
 \cite[p.~97]{mesghouni2004} \cite[p.~29]{aljarrah2017}.  
 A good size of population that researchers are using appears to be
-\(>=100\) \cite[p.~101]{mesghouni2004} \cite[p.~16]{timilsina2015}
+over 100 candidates \cite[p.~101]{mesghouni2004} \cite[p.~16]{timilsina2015}
 \cite{hosseinabadi2018}.
 
 Yu Enzhe and Sung Kiseok, for instance, run their GA to solve
 a timetabling problem using population sizes of \(25\), \(50\) and
 \(100\) and received the best results with \(100\). \cite[p.~715]{yu2002}
-However, it's also important to bear in mind that GAs are used typically
+
+Larger populations increase the probability of finding a solution.
+\cite[p.~12]{timilsina2015}. The more individuals we have scouting the
+fitness landscape, the more likely we are to encounter a peak.
+However, it's also important to bear in mind that GAs are typically used 
 in very complex problems and each candidate might encode for hundreds
 of variables. Assuming that a candidate codes for \(300\) variables and
 every variable requires \(32\) bits of memory (enough to represent values
 from \(0\) to \(4294967296\)) we end up with each candidate having a
-size of \(300 * 32 bits = 9600\ bits = 1200\ Bytes = 1.2\ KB\).  So it
-might not be able to raise the population size to an arbitrary size.
-
-% population would be to use elitism. This would protect against degrading
-% of solutions when cross-over is applied to fittest candidates.
-% \cite[p.~26]{floreano2008}
-
-% However, this enhancement may not be necessary. Norvig
-% \cite[p.~128]{norvig2010} points out that when the algorithm begins to
-% converge on a solution after being run for a while, the candidates in
-% our population are not very diverse. This means, in theory, that the
-% cross-over operator would take "smaller steps" because of how similar
-% candidates are.
+size of \(300 * 32\ bits = 9600\ bits = 1200\ Bytes = 1.2\ KB\).  So it
+might not be possible to raise the population size to an arbitrary size.
 
 \section*{Conclusion}
 
@@ -267,6 +257,14 @@ initial population, genetic \& selection operators and parameter values.
   Pages 25-36,
   2017.
 
+  \bibitem{diveev2017}
+  A I Diveev, O V Bobr,
+  \textit{Variational Genetic Algorithm for NP-hard Scheduling Problem Solution},
+  Procedia Computer Science,
+  Volume 103,
+  Pages 52-58,
+  2017.
+
   \bibitem{mesghouni2004}
   Mesghouni Khaled and Hammadi Slim,
   \textit{Evolutionary algorithms for job-shop scheduling}, 
@@ -300,18 +298,18 @@ initial population, genetic \& selection operators and parameter values.
   Pages 12-17,
   2015.
 
-  \bibitem{pezzella2008}
-  F Pezzella, G Morganti and G Ciaschetti,
-  \textit{A genetic algorithm for the Flexible Job-shop Scheduling Problem},
-  Computers \& Operations Research,
-  Volume 35, 
-  Issue 10,
-  Pages 3202-3212,
-  2008.
+  %% \bibitem{pezzella2008}
+  %% F Pezzella, G Morganti and G Ciaschetti,
+  %% \textit{A genetic algorithm for the Flexible Job-shop Scheduling Problem},
+  %% Computers \& Operations Research,
+  %% Volume 35, 
+  %% Issue 10,
+  %% Pages 3202-3212,
+  %% 2008.
 
   \bibitem{may2015}
-  \textit{Multi-objective genetic algorithm for energy-efficient job shop scheduling},
   Gökan May, Bojan Stahl, Marco Taisch and Vittal Prabhu,
+  \textit{Multi-objective genetic algorithm for energy-efficient job shop scheduling},
   International Journal of Production Research
   Volume 53,
   No 23, 
@@ -319,14 +317,14 @@ initial population, genetic \& selection operators and parameter values.
   2015.
 
   \bibitem{hosseinabadi2018}
-  \textit{Extended Genetic Algorithm for solving open-shop scheduling problem},
   Rahmani Hosseinabadi, Ali Asghar, Vahidi Javad, Saemi Behzad, Kumar Arun and Elhoseny Mohamed,
+  \textit{Extended Genetic Algorithm for solving open-shop scheduling problem},
   Soft Computing,
   Pages 1-18, 
 
   \bibitem{solanki2015}
-  \textit{Genetic Algorithm Approach for Implementation of Job Scheduling Problem},
   Sachin V. Solanki
+  \textit{Genetic Algorithm Approach for Implementation of Job Scheduling Problem},
   International Journal on Recent and Innovation Trends in Computing and Communication,
   Volume 3,
   Issue 6,
